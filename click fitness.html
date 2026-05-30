@@ -9,7 +9,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@0.383.0/dist/umd/lucide.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Nunito:wght@400;600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
 <style>
   :root {
     --orange: #FF8A3D;
@@ -140,11 +140,11 @@
 
   /* +1 Big Button */
   .plus-btn {
-    width: 120px;
-    height: 120px;
-    border-radius: 44px;
+    width: 132px;
+    height: 132px;
+    border-radius: 46px;
     background: var(--orange);
-    box-shadow: 0 8px 32px rgba(255,138,61,0.45);
+    box-shadow: 0 14px 34px rgba(255,138,61,.38);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -154,7 +154,8 @@
     -webkit-tap-highlight-color: transparent;
     user-select: none;
   }
-  .plus-btn:active { transform: translateY(2px) scale(0.94); box-shadow: var(--shadow-press); }
+  .stage .plus-btn { margin: 0 auto; }
+  .plus-btn:active { transform: translateY(2px) scale(0.94); box-shadow: 0 8px 18px rgba(255,138,61,.28); }
   .plus-btn .plus-label {
     font-family: 'Nunito', sans-serif;
     font-weight: 900;
@@ -289,21 +290,36 @@
   }
 
   .training-action-tabs {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
     gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    padding: 1px 2px 6px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    cursor: grab;
+    touch-action: pan-x;
   }
+  .training-action-tabs.dragging { cursor: grabbing; scroll-snap-type: none; }
+  .training-action-tabs::-webkit-scrollbar { display: none; }
 
   .training-action-tab {
+    flex: 1 0 calc((100% - 10px) / 2);
     border: 1.5px solid var(--border);
-    border-radius: var(--radius-control);
+    border-radius: 20px;
     background: white;
     color: var(--dark);
-    padding: 12px 14px;
+    min-height: 60px;
+    padding: 12px;
     text-align: left;
     cursor: pointer;
+    scroll-snap-align: start;
     transition: transform 0.14s ease, border-color 0.14s ease, background 0.14s ease, color 0.14s ease;
   }
+
+  .training-action-tabs.single-action .training-action-tab { flex-basis: 100%; }
+  .training-action-tabs.scrollable .training-action-tab { flex: 0 0 min(172px, 46vw); }
 
   .training-action-tab.active {
     border-color: var(--orange);
@@ -318,6 +334,51 @@
   }
 
   .training-action-tab:active { transform: translateY(1px) scale(0.97); }
+
+  .stage {
+    position: relative;
+    background:
+      radial-gradient(circle at 50% 34%, rgba(255,184,65,.14), transparent 42%),
+      linear-gradient(145deg, #FFFFFF 0%, #FFF8F1 46%, #FFF0E6 100%);
+    border-radius: 28px;
+    border: 1.5px solid rgba(255,138,61,.14);
+    padding: 32px 18px 28px;
+    box-shadow: 0 18px 46px rgba(47,47,47,.10), inset 0 0 28px rgba(255,255,255,.62);
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.72) 45%, transparent 70%);
+    transform: translateX(-120%);
+    opacity: .55;
+    pointer-events: none;
+  }
+
+  .stage.flash::before { animation: stageSweep .72s ease-out both; }
+
+  @keyframes stageSweep {
+    0% { transform: translateX(-120%); }
+    100% { transform: translateX(120%); }
+  }
+
+  .action-name {
+    font-family: 'Nunito', sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    margin: 0;
+    color: var(--dark);
+  }
+
+  .caption {
+    margin: 4px 0 22px;
+    color: var(--gray);
+    font-size: 13px;
+    font-weight: 700;
+  }
 
   /* Scrollable area with bottom padding */
   .scroll-area { overflow-y: auto; -webkit-overflow-scrolling: touch; }
@@ -335,86 +396,112 @@
     height: 16px;
   }
 
-  /* Pulse animation for recording */
-  @keyframes pulse-ring {
-    0% { transform: scale(0.72); opacity: 0.62; }
-    58% { transform: scale(1.26); opacity: 0.28; }
-    100% { transform: scale(1.62); opacity: 0; }
-  }
-  .pulse-ring {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    border: 2.5px solid var(--orange);
-    animation: pulse-ring 0.92s cubic-bezier(0.16, 1, 0.3, 1) 1;
-  }
-  .pulse-ring::after {
-    content: "";
-    position: absolute;
-    inset: 10px;
-    border-radius: 50%;
-    border: 2px solid rgba(255,138,61,0.42);
-    animation: pulse-ring 0.92s cubic-bezier(0.16, 1, 0.3, 1) 0.08s 1;
+  .counter-wrap {
+    position: relative;
+    width: 168px;
+    height: 168px;
+    margin: 0 auto;
+    display: grid;
+    place-items: center;
   }
 
-  .set-counter-wrap {
+  .counter {
     position: relative;
-    width: 128px;
-    height: 128px;
-    margin: 0 auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    z-index: 2;
+    font-family: 'Barlow Condensed', 'Nunito', sans-serif;
+    font-size: 104px;
+    line-height: 1;
+    font-weight: 900;
+    color: var(--orange) !important;
+    text-shadow: 0 10px 24px rgba(255,138,61,.20);
+    transform-origin: center;
+  }
+
+  .counter.pop { animation: counterPop .72s cubic-bezier(.18, 1.32, .32, 1) both; }
+
+  @keyframes counterPop {
+    0% { transform: scale(1); filter: blur(0); }
+    24% { transform: scale(1.52); filter: blur(.2px); }
+    48% { transform: scale(.94); }
+    72% { transform: scale(1.09); }
+    100% { transform: scale(1); }
+  }
+
+  .shockwave {
+    position: absolute;
+    inset: 26px;
+    z-index: 1;
+    border-radius: 50%;
+    border: 3px solid rgba(255,138,61,.48);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .shockwave.run { animation: shockwave .82s cubic-bezier(.16, 1, .3, 1) both; }
+
+  .shockwave.run::after {
+    content: "";
+    position: absolute;
+    inset: 13px;
+    border-radius: 50%;
+    border: 2px solid rgba(245,184,65,.36);
+    animation: shockwave .82s cubic-bezier(.16, 1, .3, 1) .08s both;
+  }
+
+  @keyframes shockwave {
+    0% { transform: scale(.72); opacity: .78; }
+    64% { opacity: .28; }
+    100% { transform: scale(1.76); opacity: 0; }
   }
 
   .float-plus {
     position: absolute;
     left: 50%;
-    top: 58%;
+    top: 55%;
     color: #F5B841;
-    font-family: 'Nunito', sans-serif;
-    font-size: 22px;
+    font-family: 'Barlow Condensed', 'Nunito', sans-serif;
+    font-size: 28px;
     font-weight: 900;
-    text-shadow: 0 0 14px rgba(245,184,65,0.42);
+    text-shadow: 0 0 14px rgba(245,184,65,.46);
     opacity: 0;
-    z-index: 3;
+    z-index: 4;
     pointer-events: none;
   }
 
-  .float-plus.run { animation: floatPlus 0.82s ease-out both; }
+  .float-plus.run { animation: floatPlus .82s ease-out both; }
 
   @keyframes floatPlus {
-    0% { transform: translate(-50%, -50%) scale(0.82); opacity: 0; }
+    0% { transform: translate(-50%, -50%) scale(.8); opacity: 0; }
     18% { opacity: 1; }
-    100% { transform: translate(-50%, -122px) scale(1.08); opacity: 0; }
+    100% { transform: translate(-50%, -132px) scale(1.08); opacity: 0; }
   }
 
-  .set-feedback {
-    min-height: 50px;
-    margin-top: 14px;
+  .feedback {
+    min-height: 44px;
+    margin: 18px 0 22px;
     padding: 12px 14px;
     border-radius: 18px;
-    background: rgba(255,255,255,0.72);
-    border: 1px solid rgba(255,138,61,0.13);
+    background: rgba(255,255,255,.62);
+    border: 1px solid rgba(255,138,61,.13);
   }
 
-  .set-feedback strong {
+  .feedback strong {
     display: block;
     font-family: 'Nunito', sans-serif;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 900;
     color: var(--dark);
   }
 
-  .set-feedback span {
+  .feedback span {
     display: block;
     margin-top: 4px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     color: var(--gray);
   }
 
-  .set-feedback.run { animation: feedbackIn 0.45s ease both; }
+  .feedback.run { animation: feedbackIn .45s ease both; }
 
   @keyframes feedbackIn {
     0% { transform: translateY(8px); opacity: 0; }
@@ -557,6 +644,229 @@
   }
   .nav-tab.active { color: var(--orange); }
   .nav-tab:active { transform: translateY(1px) scale(0.96); }
+
+  /* History page */
+  .history-stats-panel {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 18px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    background: #FFFCF8;
+    box-shadow: 0 10px 26px rgba(47,47,47,.05);
+  }
+
+  .history-stat {
+    position: relative;
+    padding: 10px 8px;
+    text-align: center;
+  }
+
+  .history-stat:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: -4px;
+    top: 16%;
+    width: 1px;
+    height: 68%;
+    background: #EFE5DA;
+  }
+
+  .history-stat strong {
+    font-family: 'Nunito', sans-serif;
+    font-size: 26px;
+    line-height: 1;
+    color: var(--dark);
+  }
+
+  .history-stat .unit {
+    margin-left: 2px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--dark);
+  }
+
+  .history-stat span {
+    display: block;
+    margin-top: 5px;
+    color: var(--gray);
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .history-section-title {
+    margin: 0 0 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 900;
+    color: var(--dark);
+  }
+
+  .history-card {
+    background: #FBFAF5;
+    border: 1px solid #E9E1D7;
+    border-radius: 24px;
+    padding: 18px;
+    box-shadow: 0 16px 40px rgba(47,47,47,.08);
+  }
+
+  .history-record-card {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FFF9F3 100%);
+  }
+
+  .history-mini-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .history-mini {
+    border: 1px solid #F0E4D8;
+    border-radius: 16px;
+    background: rgba(255,255,255,.72);
+    padding: 10px 8px;
+  }
+
+  .history-mini strong {
+    display: block;
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px;
+    line-height: 1;
+    color: var(--dark);
+  }
+
+  .history-mini span {
+    display: block;
+    margin-top: 4px;
+    color: var(--gray);
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .history-pill {
+    border-radius: 999px;
+    background: var(--orange-light);
+    color: var(--orange-dark);
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .history-ai-note {
+    border-left: 4px solid var(--orange);
+    border-radius: 14px;
+    background: rgba(255,138,61,.08);
+    padding: 11px 12px;
+    color: var(--dark);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.5;
+  }
+
+  .history-calendar-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .history-month {
+    font-family: 'Nunito', sans-serif;
+    font-size: 19px;
+    font-weight: 900;
+    color: var(--dark);
+  }
+
+  .history-legend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--gray);
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .history-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--orange);
+  }
+
+  .history-weekdays,
+  .history-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 7px;
+  }
+
+  .history-weekdays span {
+    color: #AAA;
+    font-size: 11px;
+    font-weight: 900;
+    text-align: center;
+  }
+
+  .history-day {
+    position: relative;
+    aspect-ratio: 1;
+    border: 1px solid transparent;
+    border-radius: 15px;
+    background: rgba(255,255,255,.58);
+    color: var(--dark);
+    font-weight: 900;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform .14s ease, border-color .14s ease, background .14s ease;
+  }
+
+  .history-day:active { transform: scale(.95); }
+  .history-day.empty { visibility: hidden; pointer-events: none; }
+  .history-day.today { border-color: rgba(255,138,61,.45); background: white; }
+  .history-day.active { border-color: var(--orange); background: #FFF8F1; }
+
+  .history-day.done::before {
+    content: "";
+    position: absolute;
+    inset: 8px 6px;
+    border: 2.5px solid rgba(255,138,61,.62);
+    border-radius: 45% 55% 50% 42%;
+    transform: rotate(-10deg);
+  }
+
+  .history-day.done::after {
+    content: "DONE";
+    position: absolute;
+    left: 50%;
+    top: 58%;
+    transform: translate(-50%, -50%) rotate(-11deg);
+    color: rgba(232,115,42,.82);
+    font-family: 'Nunito', sans-serif;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .4px;
+    border: 1.5px solid rgba(232,115,42,.42);
+    border-radius: 999px;
+    padding: 1px 4px;
+  }
+
+  .history-day-number {
+    position: absolute;
+    left: 8px;
+    top: 6px;
+    font-size: 12px;
+  }
+
+  .history-trophy {
+    position: absolute;
+    right: 3px;
+    top: 2px;
+    font-size: 12px;
+  }
 
   /* Emoji icon in action */
   .emoji-icon {
@@ -790,7 +1100,7 @@
         <div class="onboarding-slide slide-up slide-up-delay-1 text-center" data-slide="0">
           <div class="text-6xl mb-6">💪</div>
           <h2 class="font-display font-black text-2xl mb-3" style="color:var(--dark);">一键记录，不打断状态</h2>
-          <p class="text-base leading-relaxed" style="color:var(--gray);">每完成一组，点一下 +1<br/>就这么简单，专注训练本身</p>
+          <p class="text-base leading-relaxed" style="color:var(--gray);">每完成一次，点一下 +1<br/>就这么简单，专注训练本身</p>
         </div>
 
         <!-- Slide 2 -->
@@ -937,50 +1247,40 @@
 
     <div class="flex-1 scroll-area px-5 py-5 pb-6" style="background:#F7F7F7;">
 
-      <!-- Selected action switcher -->
-      <div class="card mb-4 slide-up" id="training-action-switch-card">
-        <div class="flex items-center justify-between mb-3">
-          <p class="text-xs font-semibold" style="color:var(--gray);">选择当前打卡动作</p>
-        </div>
+      <!-- Check-in actions -->
+      <div class="training-action-section mb-4 slide-up" id="training-action-switch-card">
         <div class="training-action-tabs" id="training-action-tabs"></div>
       </div>
 
-      <!-- Sets counter card -->
-      <div class="card text-center mb-5 slide-up" style="padding: 32px 20px;">
-        <p class="text-xs font-semibold mb-3" style="color:var(--gray);">已完成组数</p>
-        <div class="set-counter-wrap">
-          <div class="pulse-ring" id="pulse-ring" style="display:none;"></div>
+      <!-- Main check-in stage -->
+      <section class="stage mb-5 slide-up" id="checkin-stage">
+        <p class="action-name" id="set-action-name">次</p>
+        <p class="caption">每完成一次，点一下</p>
+
+        <div class="counter-wrap">
+          <div class="shockwave" id="shockwave"></div>
           <div class="float-plus" id="float-plus">EXP +1</div>
-          <div class="font-display font-black" style="font-size:80px; line-height:1; color:var(--orange);" id="set-count-display">0</div>
+          <div class="counter" id="set-count-display">0</div>
         </div>
-        <p class="font-display font-bold text-lg mt-2" style="color:var(--dark);" id="set-action-name">组</p>
-        <div class="set-feedback" id="set-feedback">
-          <strong>System Standby</strong>
-          <span>选择动作后，每完成一组点一下 +1</span>
-        </div>
-      </div>
 
-      <!-- +1 button -->
-      <div class="flex justify-center mb-5">
-        <div style="position:relative;">
-          <button class="plus-btn" id="plus-btn" onclick="addSet()">
-            <span class="plus-label">+1</span>
-          </button>
+        <div class="feedback" id="set-feedback">
+          <strong>准备就绪</strong>
+          <span>选择动作后，每完成一次点一下 +1</span>
         </div>
-      </div>
 
-      <!-- Undo button -->
-      <div class="flex justify-center mb-6">
-        <button onclick="undoSet()" class="flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold" style="background:white; color:var(--gray); border:1.5px solid var(--border); cursor:pointer;">
-          <i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i>
-          撤销上一组
+        <button class="plus-btn" id="plus-btn" onclick="addSet()">
+          <span class="plus-label">+1</span>
         </button>
-      </div>
+        <button onclick="undoSet()" class="mt-5 inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold" style="background:white; color:var(--gray); border:1.5px solid var(--border); cursor:pointer;">
+          <i data-lucide="rotate-ccw" style="width:14px;height:14px;"></i>
+          撤销上一次
+        </button>
+      </section>
 
       <!-- Countdown section -->
       <div class="card mb-4">
         <div class="flex items-center justify-between mb-3">
-          <p class="text-xs font-semibold" style="color:var(--gray);">⏱ 间歇倒计时（点击时长即开始）</p>
+          <p class="text-xs font-semibold" style="color:var(--gray);">小休一下（点击时长即开始）</p>
           <button onclick="stopCountdown()" id="countdown-stop-btn" class="hidden text-xs font-bold px-3 py-1 rounded-full" style="background:#FFE5E5; color:var(--red,#FF3B30); border:none; cursor:pointer;">
             停止
           </button>
@@ -1037,7 +1337,7 @@
           <div id="action-breakdown"></div>
 
           <div class="receipt-total">
-            <p class="text-xs font-black mb-2" style="color:var(--orange-dark);">fifi小结</p>
+            <p class="text-xs font-black mb-2" style="color:var(--orange-dark);">AI小结</p>
             <div id="training-summary-content"></div>
           </div>
 
@@ -1070,13 +1370,35 @@
 
   <!-- ==================== HISTORY PAGE ==================== -->
   <div id="page-history" class="page flex-col">
-    <div class="px-5 pt-safe pt-6 pb-3">
+    <div class="px-5 pt-safe pt-6 pb-4" style="background:white; border-bottom:1px solid var(--border);">
       <h2 class="font-display font-black text-2xl" style="color:var(--dark);">训练历史</h2>
       <p class="text-sm mt-1" style="color:var(--gray);" id="history-subtitle">记录每一次努力</p>
+      <div class="history-stats-panel">
+        <div class="history-stat"><strong id="history-month-count">0</strong><b class="unit">次</b><span>本月打卡</span></div>
+        <div class="history-stat"><strong id="history-streak-count">0</strong><b class="unit">次</b><span>当前连续</span></div>
+        <div class="history-stat"><strong id="history-pr-count">0</strong><b class="unit">次</b><span>突破记录</span></div>
+      </div>
     </div>
 
-    <div class="flex-1 scroll-area px-5 pb-24" id="history-list">
-      <!-- Populated by JS -->
+    <div class="flex-1 scroll-area px-5 pt-5 pb-24" style="background:#F7F7F7;">
+      <section class="mb-5">
+        <p class="history-section-title" id="history-record-title">今日完成</p>
+        <div class="history-card history-record-card" id="history-record-card"></div>
+      </section>
+
+      <section>
+        <p class="history-section-title">打卡日历</p>
+        <div class="history-card">
+          <div class="history-calendar-head">
+            <div class="history-month" id="history-month-label">本月</div>
+            <div class="history-legend"><span class="history-dot"></span><span>已完成</span></div>
+          </div>
+          <div class="history-weekdays">
+            <span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span>
+          </div>
+          <div class="history-calendar-grid" id="history-calendar-grid"></div>
+        </div>
+      </section>
     </div>
   </div>
 
@@ -1166,7 +1488,7 @@ let state = {
   onboardingStep: 0,
   selectedActions: [],       // actions chosen for current workout
   currentTraining: null,     // active training session
-  currentActionIndex: -1,    // -1 means the user must choose a current action first
+  currentActionIndex: 0,     // current action inside the selected workout list
   countdownDuration: 30,     // selected countdown duration
   countdownStartedTs: null,
   countdownEndTs: null,       // timestamp when countdown ends
@@ -1174,6 +1496,7 @@ let state = {
   restCount: 0,
   restTotalSeconds: 0,
   trainingStartTs: null,
+  selectedHistoryDateKey: null,
   trainingTimerInterval: null,
   debounceTimer: null,
 };
@@ -1222,9 +1545,12 @@ function normalizeTraining(training) {
   state.restCount = training.restCount;
   state.restTotalSeconds = training.restTotalSeconds;
   const savedIndex = Number(training.currentActionIndex);
-  state.currentActionIndex = Number.isInteger(savedIndex) && savedIndex >= 0 && savedIndex < training.actions.length
-    ? savedIndex
-    : -1;
+  if (Number.isInteger(savedIndex) && savedIndex >= 0 && savedIndex < training.actions.length && !training.actions[savedIndex].done) {
+    state.currentActionIndex = savedIndex;
+  } else {
+    const nextOpenIndex = training.actions.findIndex(action => !action.done);
+    state.currentActionIndex = nextOpenIndex !== -1 ? nextOpenIndex : 0;
+  }
   training.currentActionIndex = state.currentActionIndex;
   return training;
 }
@@ -1394,7 +1720,7 @@ function updateHomeDate() {
     : h < 11
     ? ['上午好，先把训练排上 💪', '上午出汗，一天神清气爽', '上午好，动起来！']
     : h < 13
-    ? ['中午好，练一组再吃饭？', '中午充电，下午满血复活 ⚡', '中午好，动起来！']
+    ? ['中午好，练一次再吃饭？', '中午充电，下午满血复活 ⚡', '中午好，动起来！']
     : h < 17
     ? ['下午好，今天练什么？', '下午了，别拖到明天 🔥', '下午好，动起来！']
     : h < 20
@@ -1456,7 +1782,7 @@ function renderRecommended() {
       <span style="font-size:28px; line-height:1;">${escapeHTML(action.emoji)}</span>
       <span class="recommend-name">${escapeHTML(name)}</span>
       <span class="recommend-meta">
-        ${escapeHTML(action.category)}${totalSets > 0 ? ' · 共' + totalSets + '组' : ''}
+        ${escapeHTML(action.category)}${totalSets > 0 ? ' · 共' + totalSets + '次' : ''}
       </span>
     `;
     card.onclick = () => {
@@ -1502,13 +1828,13 @@ function checkDraft() {
     const doneCount = draft.actions.filter(a => a.done).length;
     const activeAction = draft.currentActionIndex >= 0 ? draft.actions[draft.currentActionIndex] : null;
     document.getElementById('draft-summary').textContent = totalSets > 0
-      ? `${draft.actions.map(a=>a.name).join('、')} · 已记录 ${totalSets} 组`
+      ? `${draft.actions.map(a=>a.name).join('、')} · 已记录 ${totalSets} 次`
       : `${draft.actions.map(a=>a.name).join('、')} · 尚未开始记录`;
     const detail = document.getElementById('draft-detail');
     if (detail) {
       detail.textContent = [
         `动作进度 ${doneCount}/${draft.actions.length}`,
-        activeAction ? `当前：${activeAction.name}` : '待选择当前打卡动作',
+        activeAction ? `当前：${activeAction.name}` : '待继续训练',
         draft.restCount ? `休息 ${draft.restCount} 次 / ${draft.restTotalSeconds || 0}s` : '',
       ].filter(Boolean).join(' · ');
     }
@@ -1533,12 +1859,12 @@ function startTraining(fromDraft = false) {
     }
     state.currentTraining = {
       startTs: Date.now(),
-      currentActionIndex: -1,
+      currentActionIndex: 0,
       restCount: 0,
       restTotalSeconds: 0,
       actions: state.selectedActions.map(name => ({ name, sets: 0, done: false })),
     };
-    state.currentActionIndex = -1;
+    state.currentActionIndex = 0;
     state.restCount = 0;
     state.restTotalSeconds = 0;
   } else {
@@ -1562,9 +1888,53 @@ function setupTrainingUI() {
   // Set default countdown style
   setCountdownDuration(state.countdownDuration, false);
   renderTrainingActionTabs();
+  setupTrainingActionScroll();
   renderRestSummary();
   updateSetsDisplay();
   renderSetsLog();
+}
+
+function setupTrainingActionScroll() {
+  const container = document.getElementById('training-action-tabs');
+  if (!container || container.dataset.dragReady === 'true') return;
+  container.dataset.dragReady = 'true';
+
+  let isDown = false;
+  let startX = 0;
+  let scrollLeft = 0;
+  let moved = false;
+
+  container.addEventListener('pointerdown', (event) => {
+    if (!container.classList.contains('scrollable')) return;
+    isDown = true;
+    moved = false;
+    startX = event.clientX;
+    scrollLeft = container.scrollLeft;
+    container.classList.add('dragging');
+  });
+
+  container.addEventListener('pointermove', (event) => {
+    if (!isDown) return;
+    const deltaX = event.clientX - startX;
+    if (Math.abs(deltaX) > 4) moved = true;
+    container.scrollLeft = scrollLeft - deltaX;
+  });
+
+  const stopDrag = () => {
+    isDown = false;
+    container.classList.remove('dragging');
+    setTimeout(() => { moved = false; }, 0);
+  };
+
+  container.addEventListener('pointerup', stopDrag);
+  container.addEventListener('pointercancel', stopDrag);
+  container.addEventListener('pointerleave', stopDrag);
+
+  container.addEventListener('click', (event) => {
+    if (!moved) return;
+    event.preventDefault();
+    event.stopPropagation();
+  }, true);
 }
 
 function selectTrainingAction(index) {
@@ -1587,11 +1957,13 @@ function renderTrainingActionTabs() {
   if (!training || !container) return;
 
   const current = getCurrentAction();
+  container.classList.toggle('single-action', training.actions.length <= 1);
+  container.classList.toggle('scrollable', training.actions.length >= 3);
   document.getElementById('training-action-name').textContent = current ? current.name : '请选择动作';
   document.getElementById('set-action-name').textContent = current ? current.name : '先选择动作';
   const feedback = document.getElementById('set-feedback');
   if (feedback && !current) {
-    feedback.innerHTML = '<strong>System Standby</strong><span>选择动作后，每完成一组点一下 +1</span>';
+    feedback.innerHTML = '<strong>准备就绪</strong><span>选择动作后，每完成一次点一下 +1</span>';
     feedback.classList.remove('run');
   }
 
@@ -1605,7 +1977,13 @@ function renderTrainingActionTabs() {
       index === state.currentActionIndex ? 'active' : '',
       action.done ? 'done' : '',
     ].filter(Boolean).join(' ');
-    const status = action.done ? '已完成' : `${action.sets}组`;
+    const status = action.done
+      ? `已完成 · ${action.sets}次`
+      : index === state.currentActionIndex
+      ? `当前 · ${action.sets}次`
+      : action.sets > 0
+      ? `${action.sets}次`
+      : '未开始';
     return `
       <button class="${classes}" onclick="selectTrainingAction(${index})">
         <span class="font-display font-bold text-sm block">${escapeHTML(action.name)}</span>
@@ -1631,10 +2009,10 @@ function renderRestSummary() {
 
 const SET_FEEDBACK_LINES = [
   '开练了，状态启动',
-  '第二组来了，身体开始热了',
+  '第二次来了，身体开始热了',
   '节奏起来了',
   '已经不是随便动动了',
-  '这组数很扎实',
+  '这次数很扎实',
   '继续保持，动作在累积',
 ];
 
@@ -1650,7 +2028,7 @@ function showSetFeedback(action) {
   if (!feedback || !action) return;
   const line = SET_FEEDBACK_LINES[Math.min(action.sets - 1, SET_FEEDBACK_LINES.length - 1)];
   feedback.innerHTML = `
-    <strong>Set Complete · 第 ${action.sets} 组完成</strong>
+    <strong>第 ${action.sets} 次完成</strong>
     <span>${line}</span>
   `;
   restartAnimation(feedback, 'run');
@@ -1676,13 +2054,14 @@ function addSet() {
 
   action.sets++;
 
-  // Pulse animation
-  const ring = document.getElementById('pulse-ring');
+  // Demo-style reward animation: stage sweep, number pop, shockwave, and EXP flyout.
+  const stage = document.getElementById('checkin-stage');
+  const shockwave = document.getElementById('shockwave');
   const floatPlus = document.getElementById('float-plus');
-  ring.style.display = 'block';
+  restartAnimation(stage, 'flash');
+  restartAnimation(shockwave, 'run');
   restartAnimation(floatPlus, 'run');
   showSetFeedback(action);
-  setTimeout(() => { ring.style.display = 'none'; }, 1000);
 
   updateSetsDisplay();
   renderTrainingActionTabs();
@@ -1703,7 +2082,7 @@ function undoSet() {
     return;
   }
   if (action.sets === 0) {
-    showToast('没有可以撤销的组 😅');
+    showToast('没有可以撤销的次数 😅');
     return;
   }
   action.sets--;
@@ -1711,7 +2090,7 @@ function undoSet() {
   renderTrainingActionTabs();
   renderSetsLog();
   saveDraft();
-  showToast('已撤销上一组 ↩️');
+  showToast('已撤销上一次 ↩️');
 }
 
 function updateSetsDisplay() {
@@ -1720,9 +2099,7 @@ function updateSetsDisplay() {
   const el = document.getElementById('set-count-display');
   if (!training || !el) return;
   el.textContent = action ? action.sets : 0;
-  el.classList.remove('count-pop');
-  void el.offsetWidth; // reflow to restart animation
-  el.classList.add('count-pop');
+  restartAnimation(el, 'pop');
 }
 
 function renderSetsLog() {
@@ -1730,7 +2107,7 @@ function renderSetsLog() {
   const container = document.getElementById('sets-log');
   if (!container) return;
   if (!training || training.actions.every(a => a.sets === 0)) {
-    container.innerHTML = '<p class="text-sm text-center py-4" style="color:#BBBBBB;">点击 +1 开始记录第一组</p>';
+    container.innerHTML = '<p class="text-sm text-center py-4" style="color:#BBBBBB;">点击 +1 开始记录第一次</p>';
     return;
   }
   container.innerHTML = training.actions.map(action => {
@@ -1875,20 +2252,20 @@ function finishTraining() {
     return;
   }
   if (action.sets === 0) {
-    showToast(`请先为「${action.name}」打卡至少 1 组`);
+    showToast(`请先为「${action.name}」打卡至少 1 次`);
     return;
   }
 
   action.done = true;
   const nextIndex = training.actions.findIndex(actionItem => !actionItem.done);
   if (nextIndex !== -1) {
-    state.currentActionIndex = -1;
-    training.currentActionIndex = -1;
+    state.currentActionIndex = nextIndex;
+    training.currentActionIndex = nextIndex;
     renderTrainingActionTabs();
     updateSetsDisplay();
     renderSetsLog();
     saveDraft();
-    showToast(`已完成「${action.name}」，请选择下一个动作`);
+    showToast(`已完成「${action.name}」，已切到「${training.actions[nextIndex].name}」`);
     return;
   }
 
@@ -1958,7 +2335,7 @@ function renderSummaryReceipt(session) {
   const stats = document.getElementById('receipt-stats');
   stats.innerHTML = [
     ['动作数', `${activeActions.length} 个`],
-    ['总组数', `${session.totalSets} 组`],
+    ['总次数', `${session.totalSets} 次`],
     ['休息记录', `${session.restCount || 0} 次 / ${session.restTotalSeconds || 0}s`],
     ['预计消耗', `${riceBowls} 碗米饭 🍚`],
   ].map(([label, value], index) => `
@@ -1972,7 +2349,7 @@ function renderSummaryReceipt(session) {
   breakdown.innerHTML = activeActions.map((a, index) => `
     <div class="receipt-line" style="animation-delay:${0.78 + index * 0.08}s;">
       <span class="receipt-label">${escapeHTML(a.name)}</span>
-      <span class="receipt-value">x ${a.sets} 组</span>
+      <span class="receipt-value">x ${a.sets} 次</span>
     </div>`).join('');
 
   const summaryLines = generateTrainingSummary(session);
@@ -2003,32 +2380,38 @@ function estimateRiceBowls(calories) {
   return Math.max(1, Math.ceil(calories / 80));
 }
 
-// Training summary rules
+// fifi小结：只输出一条短反馈，优先夸具体亮点，避免成绩单显得像报告。
 function generateTrainingSummary(session) {
-  const lines = [];
-  const actionCount = session.actions.filter(a => a.sets > 0).length;
-
-  lines.push(`今天完成了 ${actionCount} 个动作，${session.totalSets} 组训练。`);
-
-  if (session.totalSets >= 15) {
-    lines.push('今天这练得挺实在，不是随便点一下就算了，是一组组认真做完的。');
-  } else if (session.totalSets >= 8) {
-    lines.push('这个节奏不错，明天不用更狠，先把今天这种稳定感接住。');
-  } else {
-    lines.push('量不一定要大，但你今天确实完成了，这就值得收下。');
-  }
-
-  // Check personal records
-  session.actions.forEach(a => {
-    if (a.sets > 0) {
-      const bestBefore = getBestSets(a.name, session.id);
-      if (bestBefore !== null && a.sets > bestBefore) {
-        lines.push(`你刷新了 ${a.name} 的历史记录，值得记下来 🏆`);
-      }
-    }
+  const activeActions = session.actions.filter(a => a.sets > 0);
+  const actionCount = activeActions.length;
+  const totalSets = session.totalSets || 0;
+  const avgRest = session.restCount ? (session.restTotalSeconds || 0) / session.restCount : null;
+  const records = activeActions.filter(a => {
+    const bestBefore = getBestSets(a.name, session.id);
+    return bestBefore !== null && a.sets > bestBefore;
   });
 
-  return lines;
+  let text = '';
+  if (records.length) {
+    text = `今天${actionCount}个动作${totalSets}次，${records[0].name}刷新记录了 🏆 这波有点狠。`;
+  } else if (actionCount >= 3) {
+    text = `今天${actionCount}个动作${totalSets}次，练得挺全面 💪 身体：收到，明天继续。`;
+  } else if (totalSets >= 12) {
+    text = `今天${totalSets}次到手，训练量很实在 🔥 不是随便动动，是认真练了。`;
+  } else if (avgRest !== null && session.restCount >= 2 && avgRest <= 35) {
+    text = `休息节奏很紧，${totalSets}次推进得干净 ⏱️ 状态不错，别浪费这手感。`;
+  } else if (totalSets <= 3) {
+    text = `今天${totalSets}次也算赢 😎 动了就比躺着强，先把火点上。`;
+  } else {
+    text = `今天${actionCount}个动作${totalSets}次，节奏还不错 🙂 稳住，比猛一下更靠谱。`;
+  }
+
+  return [limitTextLength(text, 80)];
+}
+
+function limitTextLength(text, maxLength) {
+  const chars = Array.from(text);
+  return chars.length <= maxLength ? text : chars.slice(0, maxLength).join('');
 }
 
 function showCelebrationModal() {
@@ -2099,39 +2482,164 @@ function updateStreakBadge() {
 
 // ---- HISTORY ----
 function renderHistory() {
-  const container = document.getElementById('history-list');
+  const todayKey = toDateKey(new Date());
+  if (!state.selectedHistoryDateKey) state.selectedHistoryDateKey = todayKey;
+
   const total = history.length;
   document.getElementById('history-subtitle').textContent =
-    total > 0 ? `共 ${total} 次训练记录` : '还没有训练记录';
+    total > 0 ? `共 ${total} 次训练记录` : '完成第一次训练后，这里会留下你的打卡印记';
 
-  if (!total) {
-    container.innerHTML = `
-      <div class="text-center py-20">
-        <div class="text-5xl mb-4">📋</div>
-        <p class="font-display font-bold text-lg" style="color:var(--dark);">还没有训练记录</p>
-        <p class="text-sm mt-2" style="color:var(--gray);">完成第一次训练后在这里查看</p>
+  renderHistoryStats(todayKey);
+  renderHistoryRecord();
+  renderHistoryCalendar();
+  safeCreateIcons();
+}
+
+function renderHistoryStats(todayKey) {
+  const now = new Date();
+  const monthPrefix = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-`;
+  const monthSessions = history.filter(session => getSessionDateKey(session).startsWith(monthPrefix));
+  document.getElementById('history-month-count').textContent = monthSessions.length;
+  document.getElementById('history-streak-count').textContent = calculateStreak();
+  document.getElementById('history-pr-count').textContent = getRecordSessionIds().size;
+}
+
+function renderHistoryRecord() {
+  const key = state.selectedHistoryDateKey || toDateKey(new Date());
+  const title = document.getElementById('history-record-title');
+  const card = document.getElementById('history-record-card');
+  const todayKey = toDateKey(new Date());
+  const sessions = history
+    .filter(session => getSessionDateKey(session) === key)
+    .sort((a, b) => (b.dateTs || 0) - (a.dateTs || 0));
+
+  const date = parseDateKey(key);
+  title.textContent = key === todayKey ? '今日完成' : `${date.getMonth() + 1}月${date.getDate()}日训练记录`;
+
+  if (!sessions.length) {
+    card.innerHTML = `
+      <div class="text-center py-6">
+        <div class="text-4xl mb-3">${key === todayKey ? '📋' : '🌙'}</div>
+        <p class="font-display font-bold text-base" style="color:var(--dark);">${key === todayKey ? '今天还没有完成训练' : '这天没有训练记录'}</p>
+        <p class="text-sm mt-2" style="color:var(--gray);">${key === todayKey ? '完成训练后，这里会显示今日记录' : '休息也算计划的一部分'}</p>
       </div>`;
     return;
   }
 
-  container.innerHTML = history.map(session => `
-    <div class="card mb-4">
-      <div class="flex items-start gap-3">
-        <div class="timeline-dot mt-1"></div>
-        <div class="flex-1">
-          <div class="flex items-center justify-between mb-1">
-            <span class="font-display font-bold text-sm" style="color:var(--dark);">${session.date}</span>
-            <span class="text-xs font-semibold px-2 py-1 rounded-full" style="background:var(--orange-light); color:var(--orange);">${session.totalSets}组</span>
-          </div>
-          <p class="text-xs mb-2" style="color:var(--gray);">${formatDuration(session.durationSeconds)}</p>
-          <div class="flex flex-wrap gap-1.5">
-            ${session.actions.filter(a=>a.sets>0).map(a=>
-              `<span class="text-xs font-semibold px-2 py-1 rounded-lg" style="background:var(--light-gray); color:var(--dark);">${a.name} ×${a.sets}</span>`
-            ).join('')}
-          </div>
-        </div>
+  card.innerHTML = sessions.map(session => renderHistorySession(session)).join('');
+}
+
+function renderHistorySession(session) {
+  const activeActions = (session.actions || []).filter(action => action.sets > 0);
+  const actionCount = activeActions.length;
+  const totalSets = session.totalSets || activeActions.reduce((sum, action) => sum + action.sets, 0);
+  const riceBowls = estimateRiceBowls(estimateCalories({
+    actions: activeActions,
+    totalSets,
+    restCount: session.restCount || 0,
+    restTotalSeconds: session.restTotalSeconds || 0,
+  }));
+  const timeLabel = session.dateTs ? formatTime(session.dateTs) : '已完成';
+  const aiLine = generateTrainingSummary(session)[0];
+
+  return `
+    <div class="mb-4 last:mb-0">
+      <p class="text-xs font-black mb-2" style="color:var(--orange-dark);">${timeLabel} 完成</p>
+      <div class="history-mini-stats">
+        <div class="history-mini"><strong>${actionCount}</strong><span>动作数</span></div>
+        <div class="history-mini"><strong>${totalSets}</strong><span>总次数</span></div>
+        <div class="history-mini"><strong>${riceBowls}碗</strong><span>米饭能量 🍚</span></div>
       </div>
-    </div>`).join('');
+      <div class="flex flex-wrap gap-2 mb-3">
+        ${activeActions.map(action => `<span class="history-pill">${escapeHTML(action.name)} · ${action.sets}次</span>`).join('')}
+      </div>
+      <div class="history-ai-note">${escapeHTML(aiLine)}</div>
+    </div>`;
+}
+
+function renderHistoryCalendar() {
+  const grid = document.getElementById('history-calendar-grid');
+  const monthLabel = document.getElementById('history-month-label');
+  if (!grid || !monthLabel) return;
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  const todayKey = toDateKey(today);
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const firstDay = new Date(year, month, 1);
+  const mondayOffset = (firstDay.getDay() + 6) % 7;
+  const sessionDates = new Set(history.map(getSessionDateKey));
+  const recordSessionIds = getRecordSessionIds();
+  const recordDates = new Set(history.filter(session => recordSessionIds.has(session.id)).map(getSessionDateKey));
+  const cells = [];
+
+  monthLabel.textContent = `${year}年${month + 1}月`;
+  for (let i = 0; i < mondayOffset; i++) {
+    cells.push('<button class="history-day empty"></button>');
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const key = `${year}-${pad2(month + 1)}-${pad2(day)}`;
+    const classes = [
+      'history-day',
+      key === todayKey ? 'today' : '',
+      key === state.selectedHistoryDateKey ? 'active' : '',
+      sessionDates.has(key) ? 'done' : '',
+      recordDates.has(key) ? 'pr' : '',
+    ].filter(Boolean).join(' ');
+    cells.push(`
+      <button class="${classes}" onclick="selectHistoryDate('${key}')">
+        <span class="history-day-number">${day}</span>
+        ${recordDates.has(key) ? '<span class="history-trophy">🏆</span>' : ''}
+      </button>`);
+  }
+
+  grid.innerHTML = cells.join('');
+}
+
+function selectHistoryDate(key) {
+  state.selectedHistoryDateKey = key;
+  renderHistoryRecord();
+  renderHistoryCalendar();
+}
+
+function getRecordSessionIds() {
+  const bestByAction = {};
+  const recordIds = new Set();
+  [...history].sort((a, b) => (a.dateTs || 0) - (b.dateTs || 0)).forEach(session => {
+    let hasRecord = false;
+    (session.actions || []).forEach(action => {
+      if (!action.sets) return;
+      const best = bestByAction[action.name] || 0;
+      if (best > 0 && action.sets > best) hasRecord = true;
+      if (action.sets > best) bestByAction[action.name] = action.sets;
+    });
+    if (hasRecord) recordIds.add(session.id);
+  });
+  return recordIds;
+}
+
+function getSessionDateKey(session) {
+  return toDateKey(new Date(session.dateTs || Date.now()));
+}
+
+function toDateKey(date) {
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+}
+
+function parseDateKey(key) {
+  const [year, month, day] = key.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function pad2(value) {
+  return String(value).padStart(2, '0');
+}
+
+function formatTime(ts) {
+  const date = new Date(ts);
+  return `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
 }
 
 // ---- CUSTOM ACTION ----
