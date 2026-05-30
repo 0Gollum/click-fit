@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>+1 打卡动画 Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Nunito:wght@700;800;900&family=DM+Sans:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --orange: #FF8A3D;
+    --orange-dark: #E8732A;
+    --orange-soft: #FFF0E6;
+    --ink: #2F2F2F;
+    --muted: #7A7A7A;
+    --paper: #FBFAF5;
+    --line: #EDE5DA;
+    --green: #34C759;
+    --gold: #F5B841;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at top, #FFF5EE 0, #F3F1EE 45%, #E7E4DF 100%);
+    color: var(--ink);
+    font-family: "DM Sans", system-ui, sans-serif;
+  }
+
+  .phone {
+    width: min(430px, 100vw);
+    min-height: 100dvh;
+    background: #F7F7F7;
+    padding: 28px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  @media (min-width: 768px) {
+    .phone {
+      min-height: calc(100dvh - 44px);
+      border-radius: 30px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.16);
+    }
+  }
+
+  .action-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 26px;
+  }
+
+  .tab {
+    border: 1.5px solid var(--line);
+    border-radius: 18px;
+    background: white;
+    padding: 12px 10px;
+    text-align: left;
+  }
+
+  .tab.active {
+    border-color: var(--orange);
+    background: var(--orange-soft);
+    color: var(--orange-dark);
+  }
+
+  .tab.done {
+    border-color: #CDEBD6;
+    background: #F2F7F4;
+    color: var(--green);
+  }
+
+  .tab strong {
+    display: block;
+    font-family: "Nunito", sans-serif;
+    font-size: 14px;
+    line-height: 1.1;
+  }
+
+  .tab span {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: currentColor;
+    opacity: .72;
+  }
+
+  .stage {
+    position: relative;
+    background:
+      radial-gradient(circle at 50% 34%, rgba(255,184,65,.14), transparent 42%),
+      linear-gradient(145deg, #FFFFFF 0%, #FFF8F1 46%, #FFF0E6 100%);
+    border-radius: 28px;
+    border: 1.5px solid rgba(255,138,61,.14);
+    padding: 32px 18px 28px;
+    box-shadow: 0 18px 46px rgba(47,47,47,.10), inset 0 0 28px rgba(255,255,255,.62);
+    text-align: center;
+    overflow: hidden;
+  }
+
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.72) 45%, transparent 70%);
+    transform: translateX(-120%);
+    opacity: .55;
+    pointer-events: none;
+  }
+
+  .stage.flash::before {
+    animation: stageSweep .72s ease-out both;
+  }
+
+  @keyframes stageSweep {
+    0% { transform: translateX(-120%); }
+    100% { transform: translateX(120%); }
+  }
+
+  .action-name {
+    font-family: "Nunito", sans-serif;
+    font-size: 24px;
+    font-weight: 900;
+    margin: 0;
+  }
+
+  .caption {
+    margin: 4px 0 22px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .counter-wrap {
+    position: relative;
+    width: 168px;
+    height: 168px;
+    margin: 0 auto;
+    display: grid;
+    place-items: center;
+  }
+
+  .counter {
+    position: relative;
+    z-index: 2;
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 104px;
+    line-height: 1;
+    font-weight: 900;
+    color: var(--orange);
+    text-shadow: 0 10px 24px rgba(255,138,61,.20);
+    transform-origin: center;
+  }
+
+  .counter.pop {
+    animation: counterPop .72s cubic-bezier(.18, 1.32, .32, 1) both;
+  }
+
+  @keyframes counterPop {
+    0% { transform: scale(1); filter: blur(0); }
+    24% { transform: scale(1.52); filter: blur(.2px); }
+    48% { transform: scale(.94); }
+    72% { transform: scale(1.09); }
+    100% { transform: scale(1); }
+  }
+
+  .shockwave {
+    position: absolute;
+    inset: 26px;
+    z-index: 1;
+    border-radius: 50%;
+    border: 3px solid rgba(255,138,61,.48);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .shockwave.run {
+    animation: shockwave .82s cubic-bezier(.16, 1, .3, 1) both;
+  }
+
+  .shockwave.run::after {
+    content: "";
+    position: absolute;
+    inset: 13px;
+    border-radius: 50%;
+    border: 2px solid rgba(245,184,65,.36);
+    animation: shockwave .82s cubic-bezier(.16, 1, .3, 1) .08s both;
+  }
+
+  @keyframes shockwave {
+    0% { transform: scale(.72); opacity: .78; }
+    64% { opacity: .28; }
+    100% { transform: scale(1.76); opacity: 0; }
+  }
+
+  .float-plus {
+    position: absolute;
+    left: 50%;
+    top: 55%;
+    color: var(--gold);
+    text-shadow: 0 0 14px rgba(245,184,65,.46);
+    font-family: "Barlow Condensed", sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    opacity: 0;
+    z-index: 4;
+    pointer-events: none;
+  }
+
+  .float-plus.run {
+    animation: floatPlus .82s ease-out both;
+  }
+
+  @keyframes floatPlus {
+    0% { transform: translate(-50%, -50%) scale(.8); opacity: 0; }
+    18% { opacity: 1; }
+    100% { transform: translate(-50%, -132px) scale(1.08); opacity: 0; }
+  }
+
+  .feedback {
+    min-height: 44px;
+    margin: 18px 0 22px;
+    padding: 12px 14px;
+    border-radius: 18px;
+    background: rgba(255,255,255,.62);
+    border: 1px solid rgba(255,138,61,.13);
+  }
+
+  .feedback strong {
+    display: block;
+    font-family: "Nunito", sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--ink);
+  }
+
+  .feedback span {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .feedback.run {
+    animation: feedbackIn .45s ease both;
+  }
+
+  @keyframes feedbackIn {
+    0% { transform: translateY(8px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+
+  .plus-btn {
+    width: 132px;
+    height: 132px;
+    border: none;
+    border-radius: 46px;
+    background: var(--orange);
+    color: white;
+    font-family: "Nunito", sans-serif;
+    font-size: 34px;
+    font-weight: 900;
+    box-shadow: 0 14px 34px rgba(255,138,61,.38);
+    cursor: pointer;
+    transition: transform .14s ease, box-shadow .14s ease, background .14s ease;
+  }
+
+  .plus-btn:active {
+    transform: translateY(2px) scale(.94);
+    box-shadow: 0 8px 18px rgba(255,138,61,.28);
+  }
+
+  .controls {
+    margin-top: 18px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .ghost {
+    border: 1.5px solid var(--line);
+    background: white;
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+  <main class="phone">
+    <div class="action-tabs">
+      <div class="tab done"><strong>深蹲</strong><span>已完成 · 4组</span></div>
+      <div class="tab active"><strong>俯卧撑</strong><span>当前 · <b id="tabSets">0</b>组</span></div>
+      <div class="tab"><strong>硬拉</strong><span>未开始</span></div>
+    </div>
+
+    <section class="stage">
+      <p class="action-name">俯卧撑</p>
+      <p class="caption">每完成一组，点一下</p>
+
+      <div class="counter-wrap">
+        <div class="shockwave" id="shockwave"></div>
+        <div class="float-plus" id="floatPlus">EXP +1</div>
+        <div class="counter" id="counter">0</div>
+      </div>
+
+      <div class="feedback" id="feedback">
+        <strong>System Standby</strong>
+        <span>第一组完成后，记录会出现在这里</span>
+      </div>
+
+      <button class="plus-btn" id="plusBtn">+1</button>
+    </section>
+
+    <div class="controls">
+      <button class="ghost" id="resetBtn">重置 demo</button>
+    </div>
+  </main>
+
+<script>
+  let sets = 0;
+  const counter = document.getElementById('counter');
+  const shockwave = document.getElementById('shockwave');
+  const floatPlus = document.getElementById('floatPlus');
+  const feedback = document.getElementById('feedback');
+  const plusBtn = document.getElementById('plusBtn');
+  const tabSets = document.getElementById('tabSets');
+  const resetBtn = document.getElementById('resetBtn');
+  const stage = document.querySelector('.stage');
+
+  const comments = [
+    '开练了，状态启动',
+    '第二组来了，身体开始热了',
+    '节奏起来了',
+    '已经不是随便动动了',
+    '这组数很扎实',
+    '继续保持，动作在累积'
+  ];
+
+  function restartAnimation(el, className) {
+    el.classList.remove(className);
+    void el.offsetWidth;
+    el.classList.add(className);
+  }
+
+  function recordSet() {
+    sets += 1;
+    counter.textContent = sets;
+    tabSets.textContent = sets;
+
+    restartAnimation(stage, 'flash');
+    restartAnimation(counter, 'pop');
+    restartAnimation(shockwave, 'run');
+    restartAnimation(floatPlus, 'run');
+    restartAnimation(feedback, 'run');
+
+    feedback.innerHTML = `
+      <strong>Set Complete · 第 ${sets} 组完成</strong>
+      <span>${comments[Math.min(sets - 1, comments.length - 1)]}</span>
+    `;
+  }
+
+  plusBtn.addEventListener('click', recordSet);
+  resetBtn.addEventListener('click', () => {
+    sets = 0;
+    counter.textContent = 0;
+    tabSets.textContent = 0;
+    feedback.classList.remove('run');
+    feedback.innerHTML = '<strong>System Standby</strong><span>第一组完成后，记录会出现在这里</span>';
+  });
+</script>
+</body>
+</html>
