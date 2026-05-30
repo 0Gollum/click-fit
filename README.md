@@ -4,6 +4,8 @@
 
 A minimalist workout tracker designed for one-tap fitness logging.
 
+<img width="512" height="846" alt="image" src="https://github.com/user-attachments/assets/b3635997-ec42-4577-a79c-d3cf9c9f78e6" />
+
 
 ⭐ Star this project if you like the idea.
 
